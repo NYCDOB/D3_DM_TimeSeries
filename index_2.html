@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <title>Permits Time Series</title>
+    <link rel="stylesheet" href="style2.css" type="text/css" media="screen" />
+	<script src="static/chroniton.js"></script>
+	<link href="static/chroniton.css" rel="stylesheet">
+	<style>
+		h1 {
+			font-size: 24px;
+		}
+	</style>
+</head>
+
+<h1>
+	Total Permits: <span id="year">2000</span>
+</h1>
+<div id="slider">
+</div>  
+<div id="main-wrapper">
+    
+</div><!-- @end #main-wrapper -->
+
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+
+<script>
+
+
+var width = 960,
+    height = 600,
+    center = [width / 2, height / 2],
+    defaultFill = "#E1E1E1";
+
+//var color_domain = [23,621,1109,1762,3135,5613]
+var color_domain = [59,876,1352,2065,4001,7541]
+var ext_color_domain = [0,59,876,1352,2065,4001,7541]
+var legend_labels = ["0 - 58", "59 - 875", "876 - 1,351", "1,352 - 2,064", "2,065 - 4,000", "4,001 - 7,540", "7,541 - 17,411"]
+var color = d3.scale.threshold()
+	.domain(color_domain)
+	.range(["#D8F2ED", "#B2D4CE", "#8DB5AF", "#6B9993", "#4C7D77", "#316661", "#154F4A"]);
+
+var projection = d3.geo.mercator()
+    .scale(61000)
+	.center( [-73.85,40.71] )
+    .translate([width / 2, height / 2]);
+
+var path = d3.geo.path()
+    .projection(projection);
+	
+var svg = d3.select("body #main-wrapper").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var g = svg.append("g");
+
+var tooltip = d3.select("#tooltip")
+ .attr("class", "tooltip")
+ .style("opacity", 0);
+ 
+var CURR_SELECT = ["count"];
+
+var startYear = 2000;
+var endYear = 2016;
+var currentYear = startYear;
+
+onload = updateData();
+
+/*
+// Load data
+queue()
+    .defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2000_2016.csv")
+	.await(ready_2000);
+	//d3.select("h2 span").text("2000")
+			//.transition()
+			//.delay(750);
+
+// After loading the data...
+function ready_2000(error, CD_topoJSON, TotalPermits_2000_2016) {
+
+	var commDist = CD_topoJSON.objects.geometries;
+	for (var i in commDist) { //for each collection object
+		for (var j in TotalPermits_2000_2016) { //for each row in the CSV
+			if (commDist[i].properties.id == TotalPermits_2000_2016[j].FIPS) { //if they match
+				for (var k in TotalPermits_2000_2016[i]) { //for each column in the a row within the CSV
+					if (k != 'name' && k != 'FIPS') { // let's not add the name or id as props since we already have them
+						if (attributeArray.indexOf(k) == -1) {
+							attributeArray.push(k); //add new column headings to our array for later
+						}
+						commDist[i].properties[k] = Number(TotalPermits_2000_2016[j][k]) //add each CSV column key/value to geometry
+					}
+				}
+				break; //stop looking through the CSV since we made our match
+			}
+		}
+	}
+	drawMap(CD_topoJSON);
+}
+function drawMap(CD_topoJSON) {
+   g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })	
+}*/
+
+
+// Load data
+
+function updateData() {
+
+queue()
+    .defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2000.csv")
+	.defer(d3.csv, "data/TotalPermits_2001.csv")
+	.defer(d3.csv, "data/TotalPermits_2002.csv")
+	.defer(d3.csv, "data/TotalPermits_2003.csv")
+	.defer(d3.csv, "data/TotalPermits_2004.csv")
+	.defer(d3.csv, "data/TotalPermits_2005.csv")
+	.defer(d3.csv, "data/TotalPermits_2006.csv")
+	.defer(d3.csv, "data/TotalPermits_2007.csv")
+	.defer(d3.csv, "data/TotalPermits_2008.csv")
+	.defer(d3.csv, "data/TotalPermits_2009.csv")
+	.defer(d3.csv, "data/TotalPermits_2010.csv")
+	.defer(d3.csv, "data/TotalPermits_2011.csv")
+	.defer(d3.csv, "data/TotalPermits_2012.csv")
+	.defer(d3.csv, "data/TotalPermits_2013.csv")
+	.defer(d3.csv, "data/TotalPermits_2014.csv")
+	.defer(d3.csv, "data/TotalPermits_2015.csv")
+	.defer(d3.csv, "data/TotalPermits_2016.csv")
+	.await(ready_2000);
+	d3.select("#year").html(currentYear)
+	//d3.select("h2 span").text("2000")
+			.transition()
+			.duration(750);
+}	
+// After loading the data...
+function ready_2000(error, CD_topoJSON, TotalPermits_2000, TotalPermits_2001, TotalPermits_2002, TotalPermits_2003, TotalPermits_2004, TotalPermits_2005, TotalPermits_2006, TotalPermits_2007, TotalPermits_2008, TotalPermits_2009, TotalPermits_2010, TotalPermits_2011, TotalPermits_2012, TotalPermits_2013, TotalPermits_2014, TotalPermits_2015, TotalPermits_2016) {
+
+	var countById = {};
+	switch(currentYear.toString()) {
+		case '2000':
+			TotalPermits_2000.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2001':
+			TotalPermits_2001.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2002':
+			TotalPermits_2002.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2003':
+			TotalPermits_2003.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2004':
+			TotalPermits_2004.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2005':
+			TotalPermits_2005.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2006':
+			TotalPermits_2006.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2007':
+			TotalPermits_2007.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2008':
+			TotalPermits_2008.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2009':
+			TotalPermits_2009.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2010':
+			TotalPermits_2010.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2011':
+			TotalPermits_2011.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2012':
+			TotalPermits_2012.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2013':
+			TotalPermits_2013.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2014':
+			TotalPermits_2014.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2015':
+			TotalPermits_2015.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+		case '2016':
+			TotalPermits_2016.forEach (function(d) {countById[d.FIPS] = +d.count; });
+			break;
+	}
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+		//updateData_2001();	
+}
+
+
+/*
+// Load data
+queue()
+    .defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2000.csv")
+	.await(ready_2000);
+	d3.select("h2 span").text("2000")
+			//.transition()
+			//.delay(750);
+
+// After loading the data...
+function ready_2000(error, CD_topoJSON, TotalPermits_2000) {
+
+	var countById = {};
+	TotalPermits_2000.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+		updateData_2001();
+		
+}
+function updateData_2001(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2001.csv")
+	.await(ready_2001);
+	d3.select("h2 span").text("2001")
+			.transition()
+			//.delay(750);
+			.duration(750);
+
+}
+
+function ready_2001(error, CD_topoJSON, TotalPermits_2001) {
+
+	var countById = {};
+	TotalPermits_2001.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+		updateData_2002();
+		
+}
+function updateData_2002(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2002.csv")
+	.await(ready_2002);
+	d3.select("h2 span").text("2002")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+
+function ready_2002(error, CD_topoJSON, TotalPermits_2002) {
+
+	var countById = {};
+	TotalPermits_2002.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+		updateData_2003();
+		
+}
+function updateData_2003(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2003.csv")
+	.await(ready_2003);
+	d3.select("h2 span").text("2003")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2003(error, CD_topoJSON, TotalPermits_2003) {
+
+	var countById = {};
+	TotalPermits_2003.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+
+		updateData_2004();
+		
+}
+function updateData_2004(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2004.csv")
+	.await(ready_2004);
+	d3.select("h2 span").text("2004")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2004(error, CD_topoJSON, TotalPermits_2004) {
+
+	var countById = {};
+	TotalPermits_2004.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+
+		updateData_2005();
+		
+}
+function updateData_2005(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2005.csv")
+	.await(ready_2005);
+	d3.select("h2 span").text("2005")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2005(error, CD_topoJSON, TotalPermits_2005) {
+
+	var countById = {};
+	TotalPermits_2005.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+		updateData_2006();
+		
+}
+function updateData_2006(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2006.csv")
+	.await(ready_2006);
+	d3.select("h2 span").text("2006")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2006(error, CD_topoJSON, TotalPermits_2006) {
+
+	var countById = {};
+	TotalPermits_2006.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+			
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+		updateData_2007();
+		
+}
+function updateData_2007(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2007.csv")
+	.await(ready_2007);
+	d3.select("h2 span").text("2007")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2006(error, CD_topoJSON, TotalPermits_2007) {
+
+	var countById = {};
+	TotalPermits_2007.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+
+		updateData_2008();
+		
+}
+function updateData_2008(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2008.csv")
+	.await(ready_2008);
+	d3.select("h2 span").text("2008")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2008(error, CD_topoJSON, TotalPermits_2008) {
+
+	var countById = {};
+	TotalPermits_2008.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+
+		updateData_2009();
+		
+}
+function updateData_2009(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2009.csv")
+	.await(ready_2009);
+	d3.select("h2 span").text("2009")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2009(error, CD_topoJSON, TotalPermits_2009) {
+
+	var countById = {};
+	TotalPermits_2009.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+
+		updateData_2010();
+		
+}
+function updateData_2010(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2010.csv")
+	.await(ready_2010);
+	d3.select("h2 span").text("2010")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2010(error, CD_topoJSON, TotalPermits_2010) {
+
+	var countById = {};
+	TotalPermits_2010.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+
+		updateData_2011();
+		
+}
+function updateData_2011(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2011.csv")
+	.await(ready_2011);
+	d3.select("h2 span").text("2011")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2011(error, CD_topoJSON, TotalPermits_2011) {
+
+	var countById = {};
+	TotalPermits_2011.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+
+		updateData_2012();
+		
+}
+function updateData_2012(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2012.csv")
+	.await(ready_2012);
+	d3.select("h2 span").text("2012")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2012(error, CD_topoJSON, TotalPermits_2012) {
+
+	var countById = {};
+	TotalPermits_2012.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+
+		updateData_2013();
+		
+}
+function updateData_2013(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2013.csv")
+	.await(ready_2013);
+	d3.select("h2 span").text("2013")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2013(error, CD_topoJSON, TotalPermits_2013) {
+
+	var countById = {};
+	TotalPermits_2013.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+
+		updateData_2014();
+		
+}
+function updateData_2014(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2014.csv")
+	.await(ready_2014);
+	d3.select("h2 span").text("2014")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2014(error, CD_topoJSON, TotalPermits_2014) {
+
+	var countById = {};
+	TotalPermits_2014.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+
+		updateData_2015();
+		
+}
+function updateData_2015(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2015.csv")
+	.await(ready_2015);
+	d3.select("h2 span").text("2015")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2015(error, CD_topoJSON, TotalPermits_2015) {
+
+	var countById = {};
+	TotalPermits_2015.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+
+		updateData_2016();
+		
+}
+function updateData_2016(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2016.csv")
+	.await(ready_2016);
+	d3.select("h2 span").text("2016")
+			.transition()
+			//.delay(750);
+			.duration(750);
+}
+function ready_2016(error, CD_topoJSON, TotalPermits_2016) {
+
+	var countById = {};
+	TotalPermits_2016.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+		
+}*/
+
+d3.select("#slider") 
+    .call(
+      chroniton()  
+        .domain([new Date(startYear, 1, 1), new Date(endYear, 1, 1)])  
+        .labelFormat(function(date) {
+          return Math.ceil(date.getFullYear());  
+        })
+        .width(600)  
+	.on('change', function(date) { 
+	  var newYear = Math.ceil(date.getFullYear());  
+	  if (newYear != currentYear) { 
+		currentYear = newYear;
+		//g.selectAll("path").remove(); 
+		//ready_2000();
+		updateData();
+	  }
+	})
+	.playButton(true) 
+	.playbackRate(0.3)
+	//.loop(true)
+);
+
+var legend = svg.selectAll("g.legend")
+	.data(ext_color_domain)
+	.enter().append("g")
+	.style("font-size", "14px")
+	.style("font-family", "Arial, Helvetica, sans-serif")
+	.attr("class", "legend");
+	
+var ls_w = 25, ls_h = 25;
+
+legend.append("rect")
+	.attr("x", 50)
+	.attr("y", function(d, i){return height - (i*ls_h) - 2*ls_h;})
+	<!-- .attr('transform', 'translate(10, -720)') /* XY position of legend*/ -->
+	.attr('transform', 'translate(10, -400)') /* XY position of legend*/
+	.attr("width", ls_w)
+	.attr("height", ls_h)
+	.style("fill", function(d, i){return color(d);})
+	.style("opacity", 0.8);
+legend.append("text")
+	.attr("x", 80)
+	.attr("y", function(d, i){return height - (i*ls_h) - ls_h - 5;})
+	<!-- .attr('transform', 'translate(10, -720)') /* XY position of legend*/ -->
+	.attr('transform', 'translate(10, -400)') /* XY position of legend*/
+	.text(function(d, i){return legend_labels[i];});
+
+d3.select(self.frameElement).style("height", height + "px");
+
+</script>

@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <title>Blank map</title>
+    <link rel="stylesheet" href="style2.css" type="text/css" media="screen" />
+	<script src="static/chroniton.js"></script>
+	<link href="static/chroniton.css" rel="stylesheet">
+	<style>
+
+	<!-- .q0-9 { fill:rgb(107,0,0); stroke: lightgray; stroke-width: 0.5;} .q1-9 { fill:rgb(138,46,10); stroke: lightgray; stroke-width: 0.5;} .q2-9 { fill:rgb(173,83,19); stroke: lightgray; stroke-width: 0.5;} -->
+	<!-- .q3-9 { fill:rgb(207,122,31); stroke: lightgray; stroke-width: 0.5;} .q4-9 { fill:rgb(242,167,46); stroke: lightgray; stroke-width: 0.5;} .q5-9 { fill:rgb(247,190,67); stroke: lightgray; stroke-width: 0.5;} -->
+	<!-- .q6-9 { fill:rgb(250,209,85); stroke: lightgray; stroke-width: 0.5;} .q7-9 { fill:rgb(252,233,106); stroke: lightgray; stroke-width: 0.5;} .q8-9 { fill:rgb(255,255,128); stroke: lightgray; stroke-width: 0.5;} -->
+	
+	.q0-7 { fill:rgb(216,242,237); stroke: lightgray; stroke-width: 0.5;} .q1-7 { fill:rgb(178,212,206); stroke: lightgray; stroke-width: 0.5;} .q2-7 { fill:rgb(141,181,175); stroke: lightgray; stroke-width: 0.5;}
+	.q3-7 { fill:rgb(107,153,147); stroke: lightgray; stroke-width: 0.5;} .q4-7 { fill:rgb(76,125,119); stroke: lightgray; stroke-width: 0.5;} .q5-7 { fill:rgb(49,102,97); stroke: lightgray; stroke-width: 0.5;}
+	.q6-7 { fill:rgb(21,79,74); stroke: lightgray; stroke-width: 0.5;}
+	
+
+
+	</style>
+</head>
+
+<h2>
+	<span> </span>
+</h2>
+<div id="slider">
+</div>  
+<div id="main-wrapper">
+
+<div id="tooltip" class="tooltip">
+    <h3 class="name"></h3>
+	    <div data-metric="count" class="line">
+        <!-- <div class="AvgAge symbol"></div> Average Age  -->
+		Count:
+        <div class="count_val val"></div>
+    </div>
+</div>
+
+ 
+    
+</div><!-- @end #main-wrapper -->
+
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+
+<script>
+
+
+var width = 960,
+    height = 600,
+    center = [width / 2, height / 2],
+    defaultFill = "#E1E1E1";
+	    
+//var countById = d3.map();
+
+//var color_domain = [23,621,1109,1762,3135,5613]
+var color_domain = [59,876,1352,2065,4001,7541]
+var color = d3.scale.threshold()
+	.domain(color_domain)
+	.range(["#D8F2ED", "#B2D4CE", "#8DB5AF", "#6B9993", "#4C7D77", "#316661", "#154F4A"]);
+	
+	
+var quantize = d3.scale.quantize()
+	//.domain([0, 17411])
+	.domain([0,23,621,1109,1762,3135,5613])
+	.range(d3.range(7).map(function(i) { return "q" + i + "-7"; }));
+
+var projection = d3.geo.mercator()
+    .scale(61000)
+	.center( [-73.85,40.71] )
+    .translate([width / 2, height / 2]);
+
+var path = d3.geo.path()
+    .projection(projection);
+	
+var svg = d3.select("body #main-wrapper").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var g = svg.append("g");
+
+var tooltip = d3.select("#tooltip")
+ .attr("class", "tooltip")
+ .style("opacity", 0);
+ 
+var CURR_SELECT = ["count"];
+
+var startYear = 2000;
+var endYear = 2016;
+
+// Load data
+queue()
+    .defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2000.csv")
+	.await(ready_2000);
+	d3.select("h2 span").text("2000")
+			//.transition()
+			//.delay(750);
+
+// After loading the data...
+function ready_2000(error, CD_topoJSON, TotalPermits_2000) {
+
+	var countById = {};
+	TotalPermits_2000.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2001();
+		
+}
+function updateData_2001(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2001.csv")
+	.await(ready_2001);
+	d3.select("h2 span").text("2001")
+			//.transition()
+			//.delay(750);
+}
+
+function ready_2001(error, CD_topoJSON, TotalPermits_2001) {
+
+	var countById = {};
+	TotalPermits_2001.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2002();
+		
+}
+function updateData_2002(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2002.csv")
+	.await(ready_2002);
+	d3.select("h2 span").text("2002")
+			//.transition()
+			//.delay(750);
+}
+
+function ready_2002(error, CD_topoJSON, TotalPermits_2002) {
+
+	var countById = {};
+	TotalPermits_2002.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2003();
+		
+}
+function updateData_2003(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2003.csv")
+	.await(ready_2003);
+	d3.select("h2 span").text("2003")
+			//.transition()
+			//.delay(750);
+}
+function ready_2003(error, CD_topoJSON, TotalPermits_2003) {
+
+	var countById = {};
+	TotalPermits_2003.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2004();
+		
+}
+function updateData_2004(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2004.csv")
+	.await(ready_2004);
+	d3.select("h2 span").text("2004")
+			//.transition()
+			//.delay(750);
+}
+function ready_2004(error, CD_topoJSON, TotalPermits_2004) {
+
+	var countById = {};
+	TotalPermits_2004.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2005();
+		
+}
+function updateData_2005(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2005.csv")
+	.await(ready_2005);
+	d3.select("h2 span").text("2005")
+			//.transition()
+			//.delay(750);
+}
+function ready_2005(error, CD_topoJSON, TotalPermits_2005) {
+
+	var countById = {};
+	TotalPermits_2005.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2006();
+		
+}
+function updateData_2006(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2006.csv")
+	.await(ready_2006);
+	d3.select("h2 span").text("2006")
+			//.transition()
+			//.delay(750);
+}
+function ready_2006(error, CD_topoJSON, TotalPermits_2006) {
+
+	var countById = {};
+	TotalPermits_2006.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2007();
+		
+}
+function updateData_2007(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2007.csv")
+	.await(ready_2007);
+	d3.select("h2 span").text("2007")
+			//.transition()
+			//.delay(750);
+}
+function ready_2006(error, CD_topoJSON, TotalPermits_2007) {
+
+	var countById = {};
+	TotalPermits_2007.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2008();
+		
+}
+function updateData_2008(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2008.csv")
+	.await(ready_2008);
+	d3.select("h2 span").text("2008")
+			//.transition()
+			//.delay(750);
+}
+function ready_2008(error, CD_topoJSON, TotalPermits_2008) {
+
+	var countById = {};
+	TotalPermits_2008.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2009();
+		
+}
+function updateData_2009(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2009.csv")
+	.await(ready_2009);
+	d3.select("h2 span").text("2009")
+			//.transition()
+			//.delay(750);
+}
+function ready_2009(error, CD_topoJSON, TotalPermits_2009) {
+
+	var countById = {};
+	TotalPermits_2009.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2010();
+		
+}
+function updateData_2010(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2010.csv")
+	.await(ready_2010);
+	d3.select("h2 span").text("2010")
+			//.transition()
+			//.delay(750);
+}
+function ready_2010(error, CD_topoJSON, TotalPermits_2010) {
+
+	var countById = {};
+	TotalPermits_2010.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2011();
+		
+}
+function updateData_2011(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2011.csv")
+	.await(ready_2011);
+	d3.select("h2 span").text("2011")
+			//.transition()
+			//.delay(750);
+}
+function ready_2011(error, CD_topoJSON, TotalPermits_2011) {
+
+	var countById = {};
+	TotalPermits_2011.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2012();
+		
+}
+function updateData_2012(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2012.csv")
+	.await(ready_2012);
+	d3.select("h2 span").text("2012")
+			//.transition()
+			//.delay(750);
+}
+function ready_2012(error, CD_topoJSON, TotalPermits_2012) {
+
+	var countById = {};
+	TotalPermits_2012.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2013();
+		
+}
+function updateData_2013(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2013.csv")
+	.await(ready_2013);
+	d3.select("h2 span").text("2013")
+			//.transition()
+			//.delay(750);
+}
+function ready_2013(error, CD_topoJSON, TotalPermits_2013) {
+
+	var countById = {};
+	TotalPermits_2013.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2014();
+		
+}
+function updateData_2014(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2014.csv")
+	.await(ready_2014);
+	d3.select("h2 span").text("2014")
+			//.transition()
+			//.delay(750);
+}
+function ready_2014(error, CD_topoJSON, TotalPermits_2014) {
+
+	var countById = {};
+	TotalPermits_2014.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2015();
+		
+}
+function updateData_2015(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2015.csv")
+	.await(ready_2015);
+	d3.select("h2 span").text("2015")
+			//.transition()
+			//.delay(750);
+}
+function ready_2015(error, CD_topoJSON, TotalPermits_2015) {
+
+	var countById = {};
+	TotalPermits_2015.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+
+
+		updateData_2016();
+		
+}
+function updateData_2016(){
+queue()
+	.defer(d3.json, "data/CD_topoJSON.json")
+	.defer(d3.csv, "data/TotalPermits_2016.csv")
+	.await(ready_2016);
+	d3.select("h2 span").text("2016")
+			//.transition()
+			//.delay(750);
+}
+function ready_2016(error, CD_topoJSON, TotalPermits_2016) {
+
+	var countById = {};
+	TotalPermits_2016.forEach (function(d) {countById[d.FIPS] = +d.count; });
+
+    g.append("g")
+        .attr("class", "collection")
+        .selectAll("path")
+          .data(topojson.feature(CD_topoJSON, CD_topoJSON.objects.collection).features)
+        .enter().append("path")
+		//.attr("class", function(d) { return quantize(countById.get(d.id)); })
+		
+		
+          .attr("d", path)
+		  .style("fill", function(d) {return color(countById[d.id]); })
+          
+          .on("mouseover", function(d) {
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
+               tooltip.transition().duration(100)
+                 .style("opacity", 1)
+               if (d3.event.pageX > (width - 200)) {
+                   tooltip.style("left", (d3.event.pageX - 210) + "px");
+               } else {
+                   tooltip.style("left", (d3.event.pageX + 20) + "px")
+                        .style("top", (d3.event.pageY -30) + "px");
+               }
+               if (d3.event.pageY > (height - 150)) {
+                   tooltip.style("top", (d3.event.pageY -140) + "px");
+               } else {
+                   tooltip.style("top", (d3.event.pageY -30) + "px");
+               }
+				
+             })
+          .on("mouseout", function() {
+              d3.select(this).classed("selected", false);
+              tooltip.transition().duration(300)
+                .style("opacity", 0);
+              });
+		
+}
+
+d3.select("#slider") 
+    .call(
+      chroniton()  
+        .domain([new Date(startYear, 1, 1), new Date(endYear, 1, 1)])  
+        .labelFormat(function(date) {
+          return Math.ceil(date.getFullYear());  
+        })
+        .width(600)  
+	.on('change', function(date) { 
+	  var newYear = Math.ceil(date.getFullYear());  
+	  if (newYear != currentYear) { 
+		currentYear = newYear;
+		g.selectAll("path").remove(); 
+		//update(); 
+	  }
+	})
+	.playButton(true) 
+	.playbackRate(0.2)
+	.loop(true)
+);
+
+d3.select(self.frameElement).style("height", height + "px");
+
+</script>
