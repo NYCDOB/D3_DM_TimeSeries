@@ -121,9 +121,11 @@ div.tooltip .moe { float: right; color: #aaa; width: 30px; text-align: right; }
 }
 .collection {
 	fill: #e0e0e0;
+	/*
 	stroke: #fff;
 	stroke-width: 1px;
 	stroke-linejoin: round;
+	*/
 }
 
 
