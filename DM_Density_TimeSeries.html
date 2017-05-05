@@ -56,8 +56,8 @@
 <script>
 
 
-var width = 960,
-    height = 600,
+var width = 1064,
+    height = 820,
     center = [width / 2, height / 2],
     defaultFill = "#E1E1E1";
 
@@ -70,8 +70,8 @@ var color = d3.scale.threshold()
 	.range(["#457571", "#668C81", "#8BA692", "#B1BFA3", "#DBDBB6", "#BFAD91", "#A3816F", "#875A50", "#6E3936"]);
 
 var projection = d3.geo.mercator()
-    .scale(61000)
-	.center( [-73.85,40.71] )
+    .scale(83000)
+	.center( [-73.9,40.705] )
     .translate([width / 2, height / 2]);
 
 var path = d3.geo.path()
@@ -643,7 +643,7 @@ legend.append("rect")
 	.attr("x", 50)
 	.attr("y", function(d, i){return height - (i*ls_h) - 2*ls_h;})
 	<!-- .attr('transform', 'translate(10, -720)') /* XY position of legend*/ -->
-	.attr('transform', 'translate(165, -320)') /* XY position of legend*/
+	.attr('transform', 'translate(190, -555)') /* XY position of legend*/
 	.attr("width", ls_w)
 	.attr("height", ls_h)
 	.style("fill", function(d, i){return color(d);})
@@ -652,7 +652,7 @@ legend.append("text")
 	.attr("x", 80)
 	.attr("y", function(d, i){return height - (i*ls_h) - ls_h - 5;})
 	<!-- .attr('transform', 'translate(10, -720)') /* XY position of legend*/ -->
-	.attr('transform', 'translate(165, -320)') /* XY position of legend*/
+	.attr('transform', 'translate(190, -555)') /* XY position of legend*/
 	.text(function(d, i){return legend_labels[i];});
 
 function typeAndSet(d) {
