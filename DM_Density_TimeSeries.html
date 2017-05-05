@@ -643,7 +643,7 @@ legend.append("rect")
 	.attr("x", 50)
 	.attr("y", function(d, i){return height - (i*ls_h) - 2*ls_h;})
 	<!-- .attr('transform', 'translate(10, -720)') /* XY position of legend*/ -->
-	.attr('transform', 'translate(30, -320)') /* XY position of legend*/
+	.attr('transform', 'translate(165, -320)') /* XY position of legend*/
 	.attr("width", ls_w)
 	.attr("height", ls_h)
 	.style("fill", function(d, i){return color(d);})
@@ -652,7 +652,7 @@ legend.append("text")
 	.attr("x", 80)
 	.attr("y", function(d, i){return height - (i*ls_h) - ls_h - 5;})
 	<!-- .attr('transform', 'translate(10, -720)') /* XY position of legend*/ -->
-	.attr('transform', 'translate(30, -320)') /* XY position of legend*/
+	.attr('transform', 'translate(165, -320)') /* XY position of legend*/
 	.text(function(d, i){return legend_labels[i];});
 
 function typeAndSet(d) {
