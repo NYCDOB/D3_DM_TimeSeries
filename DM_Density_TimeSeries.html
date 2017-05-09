@@ -675,6 +675,7 @@ function getDMcolor(d) {
 function updateClasses() {
 	svg.selectAll(".collection path")
 		.attr("fill", function (d){return getDMcolor(d.id); })
+		.attr("opacity", 0.9)
 }
 
 
