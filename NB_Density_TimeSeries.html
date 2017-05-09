@@ -70,7 +70,7 @@ var legend_labels = ["LOW", " ", " ", " ", " ", " ", " ", " ", "HIGH"]
 var color = d3.scale.threshold()
 	.domain(color_domain)
 	//.range(["#3288bd", "#66c2a5", "#abdda4", "#e6f598", "#ffffbf", "#fee08b", "#fdae61", "#f46d43", "#d53e4f"]);
-	.range(["#5183BD", "#7693A8", "#96A694", "#B1B87D", "#ffffbf", "#B3A159", "#9C7A4C", "#855941", "#6E3936"]);
+	.range(["#5183BD", "#7799BD", "#97ACBA", "#B9C4B9", "#DBDBB6", "#BFAD91", "#A3816F", "#875A50", "#6E3936"]);
 
 var projection = d3.geo.mercator()
     .scale(83000)
@@ -659,13 +659,13 @@ function typeAndSet(d) {
 <!-- } -->
 function getDMcolor(d) {
 	return d > 8 ? '#6E3936' :
-		   d > 7  ? '#855941' :
-		   d > 6  ? '#9C7A4C' :
-		   d > 5  ? '#B3A159' :
-		   d > 4  ? '#ffffbf' :
-		   d > 3   ? '#B1B87D' :
-		   d > 2   ? '#96A694' :
-		   d > 1   ? '#7693A8' :
+		   d > 7  ? '#875A50' :
+		   d > 6  ? '#A3816F' :
+		   d > 5  ? '#BFAD91' :
+		   d > 4  ? '#DBDBB6' :
+		   d > 3   ? '#B9C4B9' :
+		   d > 2   ? '#97ACBA' :
+		   d > 1   ? '#7799BD' :
 					  '#5183BD'; 
 }
 
