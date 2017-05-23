@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <head>
     <title>Demolition Permits Density Time Series</title>
-    <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="style2.css" type="text/css" media="screen" />
 	<script src="static/chroniton.js"></script>
 	<link href="static/chroniton.css" rel="stylesheet">
 	<style>
@@ -17,16 +17,19 @@
 	<font color="#8d9093">
 	Demolition Permits<br/>
 	Year: </font><font color="#2E648C"><span id="year">2000</span></font>
-</h1><br/><br/>
+</h1><br/>
 <h2>
 	<font color="#8d9093">
 	Citywide Total: </font><font color="#2E648C"><span id="total">1,562</span></font><br/>
 	<i><font color="#2E648C">
 	<span id="pctChg">+15.96% </span></font><font size=2px color="#8d9093"> from previous year</font></i><br/><br/>
 	<font color="#8d9093">
-	<!-- Citywide Average: </font><font color="#2E648C"><span id="avg">27.4</span></font><br/><br/>
-	<font color="#8d9093"> -->
-	Community District with<br/>Highest Permit Count: </font><font color="#2E648C"><span id="most">503</span></font>
+	<!-- Citywide Average: </font><font color="#2E648C"><span id="avg">27.4</span></font><br/><br/> -->
+	<!-- <font color="#8d9093"> -->
+	Community District with<br/>Highest Permit Count: </font><font color="#2E648C"><span id="most">503</span></font><br/><br/>
+	<i><font size=2px color="#2E648C"><span id="txt1">Demolition activity surges in South Brooklyn around</span></font></i><br/>
+	<i><font size=2px color="#2E648C"><span id="txt2">Bensonhurst and Sheepshead Bay, signaling future</span></font></i><br/>
+	<i><font size=2px color="#2E648C"><span id="txt3">development in this area of low-density housing.</span></font></i><br/>
 </h2>
 </div>
 <!-- <h2> -->
@@ -46,9 +49,9 @@
     </div>
 </div>
 
-<script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="https://d3js.org/queue.v1.min.js"></script>
-<script src="https://d3js.org/topojson.v1.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
 
 
 
@@ -56,7 +59,9 @@
 <script>
 
 
-var width = 1064,
+<!-- var width = 960, -->
+    <!-- height = 600, -->
+	var width = 1064,
     height = 820,
     center = [width / 2, height / 2],
     defaultFill = "#E1E1E1";
@@ -163,6 +168,9 @@ queue()
 	d3.select("#avg").html(27.4);
 	d3.select("#most").html(503);
 	d3.select("#pctChg").html("+15.96%");
+	d3.select("#txt1").html("Demolition activity surges in South Brooklyn around");
+	d3.select("#txt2").html("Bensonhurst and Sheepshead Bay, signaling future");
+	d3.select("#txt3").html("development in this area of low-density housing.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -193,6 +201,9 @@ queue()
 	d3.select("#avg").html(26.5);
 	d3.select("#most").html(503);
 	d3.select("#pctChg").html("+1.92%");
+	d3.select("#txt1").html("Demolition activity surges in South Brooklyn around");
+	d3.select("#txt2").html("Bensonhurst and Sheepshead Bay, signaling future");
+	d3.select("#txt3").html("development in this area of low-density housing.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -219,6 +230,9 @@ queue()
 	d3.select("#avg").html(33.7);
 	d3.select("#most").html(502);
 	d3.select("#pctChg").html("+27.07%");
+	d3.select("#txt1").html("Demolition activity surges in South Brooklyn around");
+	d3.select("#txt2").html("Bensonhurst and Sheepshead Bay, signaling future");
+	d3.select("#txt3").html("development in this area of low-density housing.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -246,6 +260,9 @@ queue()
 	d3.select("#avg").html(40.5);
 	d3.select("#most").html(407);
 	d3.select("#pctChg").html("+18.14%");
+	d3.select("#txt1").html("Demolition activity surges in South Brooklyn around");
+	d3.select("#txt2").html("Bensonhurst and Sheepshead Bay, signaling future");
+	d3.select("#txt3").html("development in this area of low-density housing.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -273,6 +290,9 @@ queue()
 	d3.select("#avg").html(51.3);
 	d3.select("#most").html(407);
 	d3.select("#pctChg").html("+26.57%");
+	d3.select("#txt1").html("Demolition activity surges in South Brooklyn around");
+	d3.select("#txt2").html("Bensonhurst and Sheepshead Bay, signaling future");
+	d3.select("#txt3").html("development in this area of low-density housing.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -300,6 +320,9 @@ queue()
 	d3.select("#avg").html(60.4);
 	d3.select("#most").html(407);
 	d3.select("#pctChg").html("+21.88%");
+	d3.select("#txt1").html("Demolition activity surges in South Brooklyn around");
+	d3.select("#txt2").html("Bensonhurst and Sheepshead Bay, signaling future");
+	d3.select("#txt3").html("development in this area of low-density housing.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -326,6 +349,9 @@ queue()
 	d3.select("#avg").html(66.1);
 	d3.select("#most").html(407);
 	d3.select("#pctChg").html("+5.80%");
+	d3.select("#txt1").html("7% of citywide demolition permits are issued in the");
+	d3.select("#txt2").html("North Brooklyn neighborhoods of Greenpoint and");
+	d3.select("#txt3").html("Williamsburg.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -353,6 +379,9 @@ queue()
 	d3.select("#avg").html(59.4);
 	d3.select("#most").html(301);
 	d3.select("#pctChg").html("-10.15%");
+	d3.select("#txt1").html("7% of citywide demolition permits are issued in the");
+	d3.select("#txt2").html("North Brooklyn neighborhoods of Greenpoint and");
+	d3.select("#txt3").html("Williamsburg.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -379,6 +408,9 @@ queue()
 	d3.select("#avg").html(44.2);
 	d3.select("#most").html(407);
 	d3.select("#pctChg").html("-24.31%");
+	d3.select("#txt1").html("7% of citywide demolition permits are issued in the");
+	d3.select("#txt2").html("North Brooklyn neighborhoods of Greenpoint and");
+	d3.select("#txt3").html("Williamsburg.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -405,6 +437,9 @@ queue()
 	d3.select("#avg").html(24.5);
 	d3.select("#most").html(407);
 	d3.select("#pctChg").html("-46.40%");
+	d3.select("#txt1").html("General economic decline leads to an overall lower");
+	d3.select("#txt2").html("volume of demolition permits issued citywide.");
+	d3.select("#txt3").html("");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -432,6 +467,9 @@ queue()
 	d3.select("#avg").html(18.4);
 	d3.select("#most").html(407);
 	d3.select("#pctChg").html("-23.07%");
+	d3.select("#txt1").html("General economic decline leads to an overall lower");
+	d3.select("#txt2").html("volume of demolition permits issued citywide.");
+	d3.select("#txt3").html("");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -458,6 +496,9 @@ queue()
 	d3.select("#avg").html(19.9);
 	d3.select("#most").html(407);
 	d3.select("#pctChg").html("+7.59%");
+	d3.select("#txt1").html("Numerous demolitions occurring in Chelsea and");
+	d3.select("#txt2").html("Hudson Yards. Post Hurricane Sandy demolitions are");
+	d3.select("#txt3").html("prevalent on the east coast of Staten Island.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -484,6 +525,9 @@ queue()
 	d3.select("#avg").html(20.8);
 	d3.select("#most").html(407);
 	d3.select("#pctChg").html("+7.65%");
+	d3.select("#txt1").html("Numerous demolitions occurring in Chelsea and");
+	d3.select("#txt2").html("Hudson Yards. Post Hurricane Sandy demolitions are");
+	d3.select("#txt3").html("prevalent on the east coast of Staten Island.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -510,6 +554,9 @@ queue()
 	d3.select("#avg").html(26.7);
 	d3.select("#most").html(502);
 	d3.select("#pctChg").html("+24.31%");
+	d3.select("#txt1").html("Demolitions continue in Midtown, Staten Island, and");
+	d3.select("#txt2").html("Rockaway, with new demolition activity focused");
+	d3.select("#txt3").html("in Flushing, Queens.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -536,6 +583,9 @@ queue()
 	d3.select("#avg").html(31.2);
 	d3.select("#most").html(503);
 	d3.select("#pctChg").html("+18.66%");
+	d3.select("#txt1").html("Demolitions continue in Midtown, Staten Island, and");
+	d3.select("#txt2").html("Rockaway, with new demolition activity focused");
+	d3.select("#txt3").html("in Flushing, Queens.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -562,6 +612,9 @@ queue()
 	d3.select("#avg").html(36.5);
 	d3.select("#most").html(407);
 	d3.select("#pctChg").html("+17.07%");
+	d3.select("#txt1").html("High demolition activity in the Brooklyn neighborhoods");
+	d3.select("#txt2").html("of Bed-Stuy and Bushwick is in part related to future");
+	d3.select("#txt3").html("affordable housing development.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -588,6 +641,9 @@ queue()
 	d3.select("#avg").html(37.5);
 	d3.select("#most").html(407);
 	d3.select("#pctChg").html("+2.93%");
+	d3.select("#txt1").html("High demolition activity in the Brooklyn neighborhoods");
+	d3.select("#txt2").html("of Bed-Stuy and Bushwick is in part related to future");
+	d3.select("#txt3").html("affordable housing development.");
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
@@ -675,7 +731,6 @@ function getDMcolor(d) {
 function updateClasses() {
 	svg.selectAll(".collection path")
 		.attr("fill", function (d){return getDMcolor(d.id); })
-		.attr("opacity", 0.9)
 }
 
 
