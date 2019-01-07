@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <head>
     <title>New Building Permits Density Time Series</title>
-    <link rel="stylesheet" href="style2.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
 	<script src="static/chroniton.js"></script>
 	<link href="static/chroniton.css" rel="stylesheet">
 	
@@ -10,7 +10,6 @@
 		h1 {
 			font-size: 24px;
 		}
-
 	</style>
 </head>
 <div id="stats">
@@ -64,15 +63,12 @@
 
 
 <script>
-
-
 <!-- var width = 960, -->
     <!-- height = 600, -->
 	var width = 1064,
     height = 820,
     center = [width / 2, height / 2],
     defaultFill = "#E1E1E1";
-
 //var color_domain = [23,621,1109,1762,3135,5613]
 var color_domain = [2,3,4,5,6,7,8,9]
 var ext_color_domain = [1,2,3,4,5,6,7,8,9]
@@ -81,34 +77,27 @@ var color = d3.scale.threshold()
 	.domain(color_domain)
 	//.range(["#3288bd", "#66c2a5", "#abdda4", "#e6f598", "#ffffbf", "#fee08b", "#fdae61", "#f46d43", "#d53e4f"]);
 	.range(["#5183BD", "#7799BD", "#97ACBA", "#B9C4B9", "#DBDBB6", "#BFAD91", "#A3816F", "#875A50", "#6E3936"]);
-
 var projection = d3.geo.mercator()
     .scale(83000)
 	.center( [-73.9,40.705] )
     .translate([width / 2, height / 2]);
-
 var path = d3.geo.path()
     .projection(projection);
 	
 var svg = d3.select("body #main-wrapper").append("svg")
     .attr("width", width)
     .attr("height", height);
-
 var g = svg.append("g");
-
 var tooltip = d3.select("#tooltip")
 	.attr("class", "tooltip")
 	.style("opacity", 0);
  
 var CURR_SELECT = ["id"];
-
 var startYear = 2000;
 var endYear = 2018;
 var currentYear = startYear;
 var countById = d3.map();
-
 onload = update2000();
-
 function currentData() {
 	switch(currentYear.toString()) {
 		case '2000':
@@ -170,7 +159,6 @@ function currentData() {
 			break;
 	}
 }
-
 // Load data
 function update2000() {
 queue()
@@ -191,7 +179,6 @@ queue()
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
-
 function ready_2000(error, NB2000_DecDeg_topoJson) {
 	//var countById= {};
 	//var countById = d3.map();
@@ -228,7 +215,6 @@ queue()
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
-
 function ready_2001(error, NB2001_DecDeg_topoJson) {
 	svg.selectAll("path").remove();
 	g.append("g")
@@ -240,7 +226,6 @@ function ready_2001(error, NB2001_DecDeg_topoJson) {
 		
 		.transition().duration(500)
 		updateClasses();
-
 }
 function update2002() {
 queue()
@@ -261,9 +246,7 @@ queue()
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
-
 function ready_2002(error, NB2002_DecDeg_topoJson) {
-
 	svg.selectAll("path").remove();
 	g.append("g")
 		.attr("class", "collection")
@@ -272,7 +255,6 @@ function ready_2002(error, NB2002_DecDeg_topoJson) {
 		.enter().append("path")
 		.attr("d", path)
 		
-
 		.transition().duration(500)
 		updateClasses();
 }
@@ -295,7 +277,6 @@ queue()
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
-
 function ready_2003(error, NB2003_DecDeg_topoJson) {
 	svg.selectAll("path").remove();
 	g.append("g")
@@ -305,7 +286,6 @@ function ready_2003(error, NB2003_DecDeg_topoJson) {
 		.enter().append("path")
 		.attr("d", path)
 		
-
 		//.style("fill", function(d) {return color(countById[d.id]); })
 		.transition().duration(500)
 		updateClasses();
@@ -329,7 +309,6 @@ queue()
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
-
 function ready_2004(error, NB2004_DecDeg_topoJson) {
 	svg.selectAll("path").remove();
 	g.append("g")
@@ -339,7 +318,6 @@ function ready_2004(error, NB2004_DecDeg_topoJson) {
 		.enter().append("path")
 		.attr("d", path)
 		
-
 		//.style("fill", function(d) {return color(countById[d.id]); })
 		.transition().duration(500)
 		updateClasses();
@@ -363,7 +341,6 @@ queue()
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
-
 function ready_2005(error, NB2005_DecDeg_topoJson) {
 	svg.selectAll("path").remove();
 	g.append("g")
@@ -396,7 +373,6 @@ queue()
 		<!-- .transition() -->
 		<!-- .duration(500); -->
 }
-
 function ready_2006(error, NB2006_DecDeg_topoJson) {
 	svg.selectAll("path").remove();
 	g.append("g")
@@ -470,7 +446,6 @@ function ready_2008(error, NB2008_DecDeg_topoJson) {
 		.data(topojson.feature(NB2008_DecDeg_topoJson, NB2008_DecDeg_topoJson.objects.collection).features)
 		.enter().append("path")
 		.attr("d", path)
-
 		//.style("fill", function(d) {return color(countById[d.id]); })
 		.transition().duration(500)
 		updateClasses();
@@ -502,7 +477,6 @@ function ready_2009(error, NB2009_DecDeg_topoJson) {
 		.data(topojson.feature(NB2009_DecDeg_topoJson, NB2009_DecDeg_topoJson.objects.collection).features)
 		.enter().append("path")
 		.attr("d", path)
-
 		
 		//.style("fill", function(d) {return color(countById[d.id]); })
 		.transition().duration(500)
@@ -567,7 +541,6 @@ function ready_2011(error, NB2011_DecDeg_topoJson) {
 		.data(topojson.feature(NB2011_DecDeg_topoJson, NB2011_DecDeg_topoJson.objects.collection).features)
 		.enter().append("path")
 		.attr("d", path)
-
 		//.style("fill", function(d) {return color(countById[d.id]); })
 		.transition().duration(500)
 		updateClasses();
@@ -631,7 +604,6 @@ function ready_2013(error, NB2013_DecDeg_topoJson) {
 		.data(topojson.feature(NB2013_DecDeg_topoJson, NB2013_DecDeg_topoJson.objects.collection).features)
 		.enter().append("path")
 		.attr("d", path)
-
 		//.style("fill", function(d) {return color(countById[d.id]); })
 		.transition().duration(500)
 		updateClasses();
@@ -663,7 +635,6 @@ function ready_2014(error, NB2014_DecDeg_topoJson) {
 		.data(topojson.feature(NB2014_DecDeg_topoJson, NB2014_DecDeg_topoJson.objects.collection).features)
 		.enter().append("path")
 		.attr("d", path)
-
 		//.style("fill", function(d) {return color(countById[d.id]); })
 		.transition().duration(500)
 		updateClasses();
@@ -695,7 +666,6 @@ function ready_2015(error, NB2015_DecDeg_topoJson) {
 		.data(topojson.feature(NB2015_DecDeg_topoJson, NB2015_DecDeg_topoJson.objects.collection).features)
 		.enter().append("path")
 		.attr("d", path)
-
 		//.style("fill", function(d) {return color(countById[d.id]); })
 		.transition().duration(500)
 		updateClasses();
@@ -727,7 +697,6 @@ function ready_2016(error, NB2016_DecDeg_topoJson) {
 		.data(topojson.feature(NB2016_DecDeg_topoJson, NB2016_DecDeg_topoJson.objects.collection).features)
 		.enter().append("path")
 		.attr("d", path)
-
 		//.style("fill", function(d) {return color(countById[d.id]); })
 		.transition().duration(500)
 		updateClasses();
@@ -758,7 +727,6 @@ function ready_2017(error, NB2017_DecDeg_topoJson) {
 		.data(topojson.feature(NB2017_DecDeg_topoJson, NB2017_DecDeg_topoJson.objects.collection).features)
 		.enter().append("path")
 		.attr("d", path)
-
 		//.style("fill", function(d) {return color(countById[d.id]); })
 		.transition().duration(500)
 		updateClasses();
@@ -794,7 +762,6 @@ function ready_2018(error, NB2018_DecDeg_topoJson) {
 		.transition().duration(500)
 		updateClasses();
 }
-
 d3.select("#slider") 
     .call(
       chroniton()  
@@ -819,7 +786,6 @@ d3.select("#slider")
 	.playbackRate(0.3)
 	//.loop(true)
 );
-
 var legend = svg.selectAll("g.legend")
 	.data(ext_color_domain)
 	.enter().append("g")
@@ -828,7 +794,6 @@ var legend = svg.selectAll("g.legend")
 	.attr("class", "legend");
 	
 var ls_w = 25, ls_h = 25;
-
 legend.append("rect")
 	.attr("x", 50)
 	.attr("y", function(d, i){return height - (i*ls_h) - 2*ls_h;})
@@ -844,12 +809,10 @@ legend.append("text")
 	<!-- .attr('transform', 'translate(10, -720)') /* XY position of legend*/ -->
 	.attr('transform', 'translate(220, -555)') /* XY position of legend*/
 	.text(function(d, i){return legend_labels[i];});
-
 function typeAndSet(d) {
     d.count = +d.count;
     countById.set(d.FIPS, d);   
 }
-
 <!-- function getDMcolor(d) { -->
 	<!-- return d > 8 ? '#d53e4f' : -->
 		   <!-- d > 7  ? '#f46d43' : -->
@@ -872,15 +835,10 @@ function getDMcolor(d) {
 		   d > 1   ? '#7799BD' :
 					  '#5183BD'; 
 }
-
 function updateClasses() {
 	svg.selectAll(".collection path")
 		.attr("fill", function (d){return getDMcolor(d.id); })
 		//.attr("opacity", 0.9)
 }
-
-
-
 d3.select(self.frameElement).style("height", height + "px");
-
 </script>
